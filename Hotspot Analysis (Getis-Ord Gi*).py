@@ -2,9 +2,6 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 from libpysal.weights import Queen
 from esda import G_Local
-import zipfile
-import os
-import io
 
 # === Step 1: Load Natural Earth countries shapefile ===
 shapefile_path = 'ne_110m_admin_0_countries.shp'
