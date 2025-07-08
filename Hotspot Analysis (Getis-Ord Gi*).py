@@ -10,8 +10,12 @@ gdf = gpd.read_file(shapefile_path)
 # Filter for Africa
 gdf = gdf[gdf['CONTINENT'] == 'Africa']
 
+gdf = gdf.to_crs("EPSG:6933")  # Equal-area projection for Africa
+gdf['area_m2'] = gdf['geometry'].area
+gdf['area_km2'] = gdf['area_m2'] / 1e6
+
 # Create population density column
-gdf['pop_density'] = gdf['POP_EST'] / gdf['geometry'].area
+gdf['pop_density'] = gdf['POP_EST'] / gdf['area_km2']  # people per km²
 
 # === Step 2: Spatial Weights Matrix (Queen contiguity) ===
 w = Queen.from_dataframe(gdf)
