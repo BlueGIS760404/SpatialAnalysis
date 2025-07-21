@@ -1,8 +1,8 @@
-from shapely.geometry import Polygon, MultiPolygon
+wfrom shapely.geometry import Polygon, MultiPolygon
 import geopandas as gpd
 
 # Load shapefile (may contain MultiPolygon)
-gdf = gpd.read_file("golestan_boundary.shp")
+gdf = gpd.read_file("shapefile.shp")
 
 # Extract the largest polygon if it's a MultiPolygon
 if gdf.geometry.iloc[0].geom_type == 'MultiPolygon':
