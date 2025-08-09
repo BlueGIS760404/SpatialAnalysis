@@ -2,7 +2,7 @@ import rasterio
 import pandas as pd
 
 # Open the GeoTIFF
-with rasterio.open("D:\Module11\PySEBAL_data\Meteo\geotiff.tif") as src:
+with rasterio.open("geotiff.tif") as src:
     array = src.read(1)  # read first band
     transform = src.transform
 
