@@ -154,7 +154,7 @@ else:
 
 plt.tight_layout()
 
-output_file = "fancy_output_histograms_ndvi.png"
+output_file = "output_histograms_ndvi.png"
 plt.savefig(output_file, dpi=300)
 print(f"Saved combined figure as {output_file}")
 
