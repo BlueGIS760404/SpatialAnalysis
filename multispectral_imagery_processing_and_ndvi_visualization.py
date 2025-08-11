@@ -4,10 +4,6 @@ import matplotlib.pyplot as plt
 import os
 
 def detect_sensor(filename, dataset):
-    """
-    Detect sensor type based on filename or metadata.
-    Returns sensor name string and band mapping dictionary.
-    """
     fname = os.path.basename(filename).lower()
 
     if "lc08" in fname or "landsat8" in fname or "l8" in fname:
@@ -54,7 +50,7 @@ def detect_sensor(filename, dataset):
     else:
         sensor = "Unknown"
         bands = {}
-    
+
     return sensor, bands
 
 # --- Main code ---
@@ -83,7 +79,6 @@ elif sensor == "Landsat8":
 elif sensor == "Sentinel2":
     required_bands_for_ndvi = ["B8", "B4"]  # NIR=8, Red=4
 
-# Validate NDVI bands presence
 missing_band = False
 indices = []
 if required_bands_for_ndvi:
@@ -101,11 +96,9 @@ if required_bands_for_ndvi:
 else:
     missing_band = True
 
-# Prepare figure for combined output
 fig, axes = plt.subplots(2, 3, figsize=(18, 10))
 axes = axes.flatten()
 
-# Plot histograms for up to 4 bands
 plot_count = 0
 for band_name, band_idx in bands.items():
     if plot_count >= 4:
@@ -123,14 +116,15 @@ for band_name, band_idx in bands.items():
     axes[plot_count].set_title(f"{band_name} Histogram")
     plot_count += 1
 
-# Calculate NDVI if possible and plot histogram + map
 if not missing_band:
     nir = out_image[indices[0]]
     red = out_image[indices[1]]
 
-    valid_mask = np.ones(nir.shape, dtype=bool)
+    # Set minimum reflectance threshold to exclude low values
+    min_reflectance = 0.05
+    valid_mask = (nir > min_reflectance) & (red > min_reflectance)
     if nodata_val is not None:
-        valid_mask = (nir != nodata_val) & (red != nodata_val)
+        valid_mask &= (nir != nodata_val) & (red != nodata_val)
 
     nir = np.where(valid_mask, nir, np.nan)
     red = np.where(valid_mask, red, np.nan)
@@ -138,11 +132,9 @@ if not missing_band:
     ndvi = (nir - red) / (nir + red)
     ndvi[np.isinf(ndvi)] = np.nan
 
-    # NDVI histogram
     axes[4].hist(ndvi[np.isfinite(ndvi)], bins=50, color='green', edgecolor='black')
     axes[4].set_title("NDVI Histogram")
 
-    # NDVI spatial map
     ndvi_img = axes[5].imshow(ndvi, cmap='RdYlGn', vmin=-1, vmax=1)
     axes[5].set_title("NDVI Map")
     axes[5].axis('off')
